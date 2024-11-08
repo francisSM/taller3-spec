@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 const db = require('./db');
 const cors = require('cors');
 
-
 const app = express();
 
 app.use(cors({ origin: 'http://localhost:8080' }));
@@ -56,6 +55,33 @@ app.post('/api/login', (req, res) => {
             res.json({ message: 'Login exitoso', token });
         }
     );
+});
+
+// Endpoint para guardar las estadísticas del juego
+app.post('/api/stats', async (req, res) => {
+    const { userId, result } = req.body;
+    if (!userId || !result) return res.status(400).json({ error: "Datos inválidos" });
+
+    try {
+        const query = 'INSERT INTO user_stats (user_id, result) VALUES (?, ?)';
+        await db.query(query, [userId, result]);
+        res.status(201).json({ message: "Estadísticas guardadas exitosamente" });
+    } catch (error) {
+        res.status(500).json({ error: "Error al guardar las estadísticas" });
+    }
+});
+
+// Endpoint para obtener las estadísticas del usuario logeado
+app.get('/api/stats/:userId', async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        const query = 'SELECT result, created_at FROM user_stats WHERE user_id = ? ORDER BY created_at DESC';
+        const [results] = await db.query(query, [userId]);
+        res.json(results);
+    } catch (error) {
+        res.status(500).json({ error: "Error al obtener las estadísticas" });
+    }
 });
 
 const PORT = process.env.PORT || 5000;
