@@ -57,18 +57,26 @@ app.post('/api/login', (req, res) => {
     );
 });
 
-// Endpoint para guardar las estadísticas del juego
-app.post('/api/stats', (req, res) => {
-    const { userId, result } = req.body;
-    if (!userId || !result) return res.status(400).json({ error: "Datos inválidos" });
-
-    const query = 'INSERT INTO user_stats (user_id, result) VALUES (?, ?)';
-
-    db.query(query, [userId, result], (err, result) => {
+// Endpoint para obtener estadísticas de todos los usuarios
+app.get('/api/stats', (req, res) => {
+    const query = `
+        SELECT 
+            users.id, 
+            users.username, 
+            SUM(CASE WHEN user_stats.result = 'win' THEN 1 ELSE 0 END) AS wins,
+            SUM(CASE WHEN user_stats.result = 'lose' THEN 1 ELSE 0 END) AS losses
+        FROM users
+        LEFT JOIN user_stats ON users.id = user_stats.user_id
+        GROUP BY users.id
+        ORDER BY users.username
+    `;
+    
+    db.query(query, (err, results) => {
         if (err) {
-            return res.status(500).json({ error: "Error al guardar las estadísticas" });
+            console.error('Error en la consulta:', err);
+            return res.status(500).json({ error: 'Error al obtener las estadísticas' });
         }
-        res.status(201).json({ message: "Estadísticas guardadas exitosamente" });
+        res.json(results);
     });
 });
 
