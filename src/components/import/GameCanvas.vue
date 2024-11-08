@@ -239,16 +239,25 @@ export default {
         : player.position.x - player.attackBox.width;
       player.attackBox.position.y = player.position.y;
 
-      if (player.isAttacking) {
-        ctx.fillStyle = 'yellow';
-        ctx.fillRect(player.attackBox.position.x, player.attackBox.position.y, player.attackBox.width, player.attackBox.height);
+  if (player.isAttacking) {
+    // Cargar la imagen del ataque
+    const attackImg = new Image();
+    attackImg.src = require('@/assets/ataque.png');  // Ruta de la imagen de ataque
+    
+    // Ajustar el tamaño de la imagen del ataque
+    const attackWidth = 100; 
+    const attackHeight = 50;
 
-        if (this.detectCollision(player.attackBox, opponent)) {
-          opponent.health -= 20;
-          this.updateHealth(opponent === this.player ? 'player' : 'enemy', opponent.health);
-        }
-        player.isAttacking = false;
-      }
+    // Dibujar la imagen del ataque
+    ctx.drawImage(attackImg, player.attackBox.position.x, player.attackBox.position.y, attackWidth, attackHeight);
+
+    // Verificar si hay colisión
+    if (this.detectCollision(player.attackBox, opponent)) {
+      opponent.health -= 10;
+      this.updateHealth(opponent === this.player ? 'player' : 'enemy', opponent.health);
+    }
+    player.isAttacking = false;
+  }
 
       if (player === this.player) {
         player.velocity.x = this.keys.a.pressed && !this.keys.d.pressed ? -5 : this.keys.d.pressed && !this.keys.a.pressed ? 5 : 0;
