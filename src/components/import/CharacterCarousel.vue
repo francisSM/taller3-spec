@@ -15,9 +15,11 @@ export default {
   data() {
     return {
       characters: [
-        require('@/assets/fox.png'),
-        require('@/assets/logo.png'),
-        require('@/assets/test.png')
+        require('@/assets/zorro.png'),
+        require('@/assets/pig1.png'),
+        require('@/assets/pig2.png'),
+        require('@/assets/pig3.png')
+
       ],
       currentCharacter: 0,
     };
@@ -47,7 +49,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 80px;
+  margin-top: 50px;
 }
 .carousel-container {
   display: flex;

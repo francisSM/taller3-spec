@@ -65,7 +65,7 @@ export default {
   },
   methods: {
     async getName() {
-      const nameTest = await this.getUserName();  // Corregir la asignación de 'name' y usar 'await' para esperar la promesa
+      const nameTest = await this.getUserName();
       return nameTest;
     },
     initializeGame() {
