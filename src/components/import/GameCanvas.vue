@@ -76,7 +76,7 @@ export default {
 
       // solución al nombre...
       this.getName().then(name => {
-        this.player1Name = name; 
+        this.player1Name = name;
         console.log("test: " + name);
       }).catch(error => {
         console.error('Error al obtener el nombre del usuario:', error);
@@ -98,8 +98,8 @@ export default {
       return {
         position: { x, y },
         velocity: { x: 0, y: 0 },
-        width: 50,
-        height: 150,
+        width: 75,
+        height: 180,
         image: image,
         health: 100,
         isAttacking: false,
