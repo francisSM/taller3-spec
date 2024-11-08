@@ -8,14 +8,14 @@
                 <router-link to="/" class="navbar-link" :class="{ active: $route.name === 'home' }">Home</router-link>
                 <router-link to="/wiki" class="navbar-link"
                     :class="{ active: $route.name === 'wiki' }">Wiki</router-link>
+                <router-link to="/stats" class="navbar-link"
+                    :class="{ active: $route.name === 'stats' }">Estadísticas</router-link>
                 <router-link v-if="!isAuthenticated" to="/login" class="navbar-link"
                     :class="{ active: $route.name === 'login' }">Login</router-link>
                 <router-link v-if="!isAuthenticated" to="/register" class="navbar-link"
                     :class="{ active: $route.name === 'register' }">Register</router-link>
                 <router-link v-if="isAuthenticated" to="/game" class="navbar-link"
                     :class="{ active: $route.name === 'game' }">Play</router-link>
-                <router-link v-if="isAuthenticated" to="/stats" class="navbar-link"
-                    :class="{ active: $route.name === 'stats' }">Statistics</router-link>
                 <button v-if="isAuthenticated" class="logout-btn" @click="logout">Logout</button>
             </div>
         </nav>
@@ -45,13 +45,11 @@ export default {
         },
     },
     watch: {
-        // Observamos el localStorage y actualizamos la autenticación
         '$route'() {
             this.checkAuthentication();
         },
     },
 };
-
 </script>
 
 <style scoped>
