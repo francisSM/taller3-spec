@@ -162,9 +162,42 @@ export default {
         this.gameOver = true;
         this.displayText = this.playerHealth <= 0 ? '¡Ganó el Player 2!' : '¡Ganó el Player 1!';
         const winner = this.playerHealth <= 0 ? 'Player 2' : 'Player 1';
-        this.$emit('game-over', winner); // Emitimos el evento con el nombre del ganador
-      }
 
+        // Emitimos el evento con el nombre del ganador
+        this.$emit('game-over', winner);
+
+        // Determinamos el resultado del juego y lo enviamos al backend
+        const result = this.playerHealth <= 0 ? 'lose' : 'win';
+        this.sendGameResult(result);  // Enviar el resultado (win/lose)
+      }
+    },
+
+    // Método para enviar el resultado del juego al backend
+    sendGameResult(result) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const decodedToken = JSON.parse(atob(token.split('.')[1])); // Decodificar JWT
+        const userId = decodedToken.id;
+
+        fetch('http://localhost:5000/api/stats', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ userId, result })  // Enviar el resultado y el userId
+        })
+          .then(response => {
+            if (response.ok) {
+              console.log('Estadísticas guardadas correctamente');
+            } else {
+              console.error('Error al guardar las estadísticas');
+            }
+          })
+          .catch(error => {
+            console.error('Error al enviar el resultado:', error);
+          });
+      }
     },
     animate(ctx) {
       if (this.gameOver) return;

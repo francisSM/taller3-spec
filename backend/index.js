@@ -58,30 +58,32 @@ app.post('/api/login', (req, res) => {
 });
 
 // Endpoint para guardar las estadísticas del juego
-app.post('/api/stats', async (req, res) => {
+app.post('/api/stats', (req, res) => {
     const { userId, result } = req.body;
     if (!userId || !result) return res.status(400).json({ error: "Datos inválidos" });
 
-    try {
-        const query = 'INSERT INTO user_stats (user_id, result) VALUES (?, ?)';
-        await db.query(query, [userId, result]);
+    const query = 'INSERT INTO user_stats (user_id, result) VALUES (?, ?)';
+    
+    db.query(query, [userId, result], (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: "Error al guardar las estadísticas" });
+        }
         res.status(201).json({ message: "Estadísticas guardadas exitosamente" });
-    } catch (error) {
-        res.status(500).json({ error: "Error al guardar las estadísticas" });
-    }
+    });
 });
 
 // Endpoint para obtener las estadísticas del usuario logeado
-app.get('/api/stats/:userId', async (req, res) => {
+app.get('/api/stats/:userId', (req, res) => {
     const { userId } = req.params;
 
-    try {
-        const query = 'SELECT result, created_at FROM user_stats WHERE user_id = ? ORDER BY created_at DESC';
-        const [results] = await db.query(query, [userId]);
+    const query = 'SELECT result, created_at FROM user_stats WHERE user_id = ? ORDER BY created_at DESC';
+    
+    db.query(query, [userId], (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: "Error al obtener las estadísticas" });
+        }
         res.json(results);
-    } catch (error) {
-        res.status(500).json({ error: "Error al obtener las estadísticas" });
-    }
+    });
 });
 
 const PORT = process.env.PORT || 5000;
