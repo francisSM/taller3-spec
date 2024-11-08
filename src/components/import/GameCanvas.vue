@@ -92,14 +92,43 @@ export default {
       this.enemy = this.createPlayer({ x: canvas.width - 250, y: canvas.height - 200 - this.groundLevel, image: this.player2Character });
 
       this.animate(ctx);
-
     },
+    async getUserName() {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const decodedToken = JSON.parse(atob(token.split('.')[1])); // Decodificar el token
+          const userId = decodedToken.id;
+          const userName = await this.fetchUserName(userId); // Esperar a que se resuelva la Promise
+          return userName; // Devolver el nombre del usuario
+        } catch (error) {
+          console.error('Error al decodificar el token:', error);
+          return 'Player 1';
+        }
+      }
+      return 'Player 1';
+    },
+    async fetchUserName(userId) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/users/${userId}`);
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Error: ${response.status} - ${errorText}`);
+        }
+        const data = await response.json();
+        return data.username; // Esto se devolverá si no hay error
+      } catch (error) {
+        console.error('Error al obtener el nombre del usuario:', error);
+        return 'Player 1'; // Valor por defecto en caso de error
+      }
+    },
+
     createPlayer({ x, y, image }) {
       return {
         position: { x, y },
         velocity: { x: 0, y: 0 },
-        width: 50,
-        height: 150,
+        width: 75,
+        height: 180,
         image: image,
         health: 100,
         isAttacking: false,
@@ -185,35 +214,8 @@ export default {
         this.sendGameResult(result);  // Enviar el resultado (win/lose)
       }
     },
-    async getUserName() {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const decodedToken = JSON.parse(atob(token.split('.')[1])); // Decodificar el token
-          const userId = decodedToken.id;
-          const userName = await this.fetchUserName(userId); // Esperar a que se resuelva la Promise
-          return userName; // Devolver el nombre del usuario
-        } catch (error) {
-          console.error('Error al decodificar el token:', error);
-          return 'Player 1';
-        }
-      }
-      return 'Player 1';
-    },
-    async fetchUserName(userId) {
-      try {
-        const response = await fetch(`http://localhost:5000/api/users/${userId}`);
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Error: ${response.status} - ${errorText}`);
-        }
-        const data = await response.json();
-        return data.username; // Esto se devolverá si no hay error
-      } catch (error) {
-        console.error('Error al obtener el nombre del usuario:', error);
-        return 'Player 1'; // Valor por defecto en caso de error
-      }
-    },
+
+    // Método para enviar el resultado del juego al backend
     sendGameResult(result) {
       const token = localStorage.getItem('token');
       if (token) {
@@ -280,16 +282,25 @@ export default {
         : player.position.x - player.attackBox.width;
       player.attackBox.position.y = player.position.y;
 
-      if (player.isAttacking) {
-        ctx.fillStyle = 'yellow';
-        ctx.fillRect(player.attackBox.position.x, player.attackBox.position.y, player.attackBox.width, player.attackBox.height);
+  if (player.isAttacking) {
+    // Cargar la imagen del ataque
+    const attackImg = new Image();
+    attackImg.src = require('@/assets/ataque.png');  // Ruta de la imagen de ataque
+    
+    // Ajustar el tamaño de la imagen del ataque
+    const attackWidth = 100; 
+    const attackHeight = 50;
 
-        if (this.detectCollision(player.attackBox, opponent)) {
-          opponent.health -= 20;
-          this.updateHealth(opponent === this.player ? 'player' : 'enemy', opponent.health);
-        }
-        player.isAttacking = false;
-      }
+    // Dibujar la imagen del ataque
+    ctx.drawImage(attackImg, player.attackBox.position.x, player.attackBox.position.y, attackWidth, attackHeight);
+
+    // Verificar si hay colisión
+    if (this.detectCollision(player.attackBox, opponent)) {
+      opponent.health -= 10;
+      this.updateHealth(opponent === this.player ? 'player' : 'enemy', opponent.health);
+    }
+    player.isAttacking = false;
+  }
 
       if (player === this.player) {
         player.velocity.x = this.keys.a.pressed && !this.keys.d.pressed ? -5 : this.keys.d.pressed && !this.keys.a.pressed ? 5 : 0;
