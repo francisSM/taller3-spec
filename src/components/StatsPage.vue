@@ -1,4 +1,3 @@
-<!-- src/components/StatsPage.vue -->
 <template>
     <div>
         <h2>Statistics</h2>
@@ -25,7 +24,6 @@ export default {
 </script>
 
 <style scoped>
-/* Estilos para las estadísticas */
 h2 {
     text-align: center;
 }

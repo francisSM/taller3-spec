@@ -27,10 +27,12 @@ export default {
                     username: this.username,
                     password: this.password,
                 });
-                localStorage.setItem('token', response.data.token);
-                this.$router.push('/'); // redige al inicio
+                localStorage.setItem('token', response.data.token); // Guardamos el token
+                this.$router.push('/wiki'); 
+                this.$root.$forceUpdate(); // Fuerza la actualización global
+
             } catch (error) {
-                alert('Invalid credentials');
+                alert('Credenciales Invalidas');
             }
         },
     },

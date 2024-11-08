@@ -1,15 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Navbar from '../components/Navbar.vue';
 import LoginForm from '../components/LoginForm.vue';
 import RegisterForm from '../components/RegisterForm.vue';
 import GamePage from '../components/GamePage.vue';
 import StatsPage from '../components/StatsPage.vue';
+import WikiPage from '@/components/WikiPage.vue';
 
 const routes = [
     {
         path: '/',
         name: 'home',
-        component: Navbar, // Página principal con Navbar
+        redirect: '/wiki', // O la vista que consideres como inicio
     },
     {
         path: '/login',
@@ -20,6 +20,11 @@ const routes = [
         path: '/register',
         name: 'register',
         component: RegisterForm, // Componente de registro
+    },
+    {
+        path: '/wiki',
+        name: 'wiki',
+        component: WikiPage, // Componente de Wikipedia
     },
     {
         path: '/stats',

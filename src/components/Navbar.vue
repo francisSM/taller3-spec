@@ -1,35 +1,42 @@
 <template>
-    <nav>
-        <ul>
-            <li><router-link to="/">Home</router-link></li>
-            <li><router-link to="/login" v-if="!isAuthenticated">Login</router-link></li>
-            <li><router-link to="/register" v-if="!isAuthenticated">Register</router-link></li>
-            <li><router-link to="/stats" v-if="isAuthenticated">Stats</router-link></li>
-            <li><router-link to="/game" v-if="isAuthenticated">Game</router-link></li>
-            <li v-if="isAuthenticated">
-                <button @click="logout">Logout</button>
-            </li>
-        </ul>
-    </nav>
+    <div>
+        <nav class="navbar">
+            <div class="navbar-logo">
+                <h1>Game Wiki</h1>
+            </div>
+            <div class="navbar-links">
+                <router-link to="/" class="navbar-link" :class="{ active: $route.name === 'home' }">Home</router-link>
+                <router-link to="/wiki" class="navbar-link"
+                    :class="{ active: $route.name === 'wiki' }">Wiki</router-link>
+                <router-link v-if="!isAuthenticated" to="/login" class="navbar-link"
+                    :class="{ active: $route.name === 'login' }">Login</router-link>
+                <router-link v-if="!isAuthenticated" to="/register" class="navbar-link"
+                    :class="{ active: $route.name === 'register' }">Register</router-link>
+                <router-link v-if="isAuthenticated" to="/game" class="navbar-link"
+                    :class="{ active: $route.name === 'game' }">Play</router-link>
+                <router-link v-if="isAuthenticated" to="/stats" class="navbar-link"
+                    :class="{ active: $route.name === 'stats' }">Statistics</router-link>
+                <button v-if="isAuthenticated" class="logout-btn" @click="logout">Logout</button>
+            </div>
+        </nav>
+    </div>
 </template>
 
 <script>
 export default {
-    name: 'NavBarComponent',
+    name: 'NavbarComponent',
     data() {
         return {
             isAuthenticated: false,
         };
     },
     created() {
-        this.checkAuth();
+        this.checkAuthentication();
     },
     methods: {
-        checkAuth() {
+        checkAuthentication() {
             const token = localStorage.getItem('token');
-            if (token) {
-                this.isAuthenticated = true;
-            }
+            this.isAuthenticated = !!token;
         },
         logout() {
             localStorage.removeItem('token');
@@ -37,35 +44,64 @@ export default {
             this.$router.push('/login');
         },
     },
+    watch: {
+        // Observamos el localStorage y actualizamos la autenticación
+        '$route'() {
+            this.checkAuthentication();
+        },
+    },
 };
+
 </script>
 
 <style scoped>
-/* Estilos básicos para la barra de navegación */
-nav {
-    background-color: #333;
-    padding: 10px;
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2c3e50;
+    padding: 15px 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-ul {
-    list-style: none;
-    padding: 0;
-}
-
-li {
-    display: inline;
-    margin-right: 10px;
-}
-
-a {
+.navbar-logo h1 {
     color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.navbar-links {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-link {
+    color: #ecf0f1;
     text-decoration: none;
+    font-size: 18px;
+    margin: 0 15px;
+    transition: color 0.3s;
 }
 
-button {
+.navbar-link:hover {
+    color: #3498db;
+}
+
+.logout-btn {
+    background-color: #e74c3c;
     color: white;
-    background: none;
-    border: 1px solid white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+    background-color: #c0392b;
+}
+
+.navbar-link.active {
+    color: #3498db;
 }
 </style>
