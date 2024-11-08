@@ -30,7 +30,6 @@ const routes = [
         path: '/stats',
         name: 'stats',
         component: StatsPage, // Componente de estadísticas
-        meta: { requiresAuth: true }, // Solo accesible si el usuario está logeado
     },
     {
         path: '/game',
