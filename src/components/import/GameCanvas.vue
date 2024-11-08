@@ -2,7 +2,7 @@
   <div id="container" v-if="!gameOver">
     <div id="healthContainer">
       <div class="playerContainer">
-        <div class="playerName">Player 1</div><br>
+        <div class="playerName">{{ player1Name }}</div><br>
         <div class="healthBar">
           <div class="health" :style="{ width: playerHealth + '%' }"></div>
         </div>
@@ -25,6 +25,7 @@ export default {
   props: ['player1Character', 'player2Character'],
   data() {
     return {
+      player1Name: "",
       player: null,
       enemy: null,
       playerHealth: 100,
@@ -63,12 +64,24 @@ export default {
     this.backgroundMusic.currentTime = 0;
   },
   methods: {
+    async getName() {
+      const nameTest = await this.getUserName();  // Corregir la asignación de 'name' y usar 'await' para esperar la promesa
+      return nameTest;
+    },
     initializeGame() {
       this.gameOver = false;
       this.displayText = "";
       this.playerHealth = 100;
       this.enemyHealth = 100;
 
+      // solución al nombre...
+      this.getName().then(name => {
+        this.player1Name = name; 
+        console.log("test: " + name);
+      }).catch(error => {
+        console.error('Error al obtener el nombre del usuario:', error);
+        this.player1Name = 'Player 1'; // Valor por defecto si hay un error
+      });
       const canvas = this.$refs.gameCanvas;
       const ctx = canvas.getContext('2d');
       canvas.width = window.innerWidth;
@@ -79,6 +92,7 @@ export default {
       this.enemy = this.createPlayer({ x: canvas.width - 250, y: canvas.height - 200 - this.groundLevel, image: this.player2Character });
 
       this.animate(ctx);
+
     },
     createPlayer({ x, y, image }) {
       return {
@@ -171,8 +185,35 @@ export default {
         this.sendGameResult(result);  // Enviar el resultado (win/lose)
       }
     },
-
-    // Método para enviar el resultado del juego al backend
+    async getUserName() {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const decodedToken = JSON.parse(atob(token.split('.')[1])); // Decodificar el token
+          const userId = decodedToken.id;
+          const userName = await this.fetchUserName(userId); // Esperar a que se resuelva la Promise
+          return userName; // Devolver el nombre del usuario
+        } catch (error) {
+          console.error('Error al decodificar el token:', error);
+          return 'Player 1';
+        }
+      }
+      return 'Player 1';
+    },
+    async fetchUserName(userId) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/users/${userId}`);
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Error: ${response.status} - ${errorText}`);
+        }
+        const data = await response.json();
+        return data.username; // Esto se devolverá si no hay error
+      } catch (error) {
+        console.error('Error al obtener el nombre del usuario:', error);
+        return 'Player 1'; // Valor por defecto en caso de error
+      }
+    },
     sendGameResult(result) {
       const token = localStorage.getItem('token');
       if (token) {

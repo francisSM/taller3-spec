@@ -63,7 +63,7 @@ app.post('/api/stats', (req, res) => {
     if (!userId || !result) return res.status(400).json({ error: "Datos inválidos" });
 
     const query = 'INSERT INTO user_stats (user_id, result) VALUES (?, ?)';
-    
+
     db.query(query, [userId, result], (err, result) => {
         if (err) {
             return res.status(500).json({ error: "Error al guardar las estadísticas" });
@@ -77,7 +77,7 @@ app.get('/api/stats/:userId', (req, res) => {
     const { userId } = req.params;
 
     const query = 'SELECT result, created_at FROM user_stats WHERE user_id = ? ORDER BY created_at DESC';
-    
+
     db.query(query, [userId], (err, results) => {
         if (err) {
             return res.status(500).json({ error: "Error al obtener las estadísticas" });
@@ -89,4 +89,19 @@ app.get('/api/stats/:userId', (req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+});
+
+app.get('/api/users/:id', (req, res) => {
+    const userId = req.params.id;
+
+    db.query('SELECT username FROM users WHERE id = ?', [userId], (err, results) => {
+        if (err) {
+            console.error('Error en la consulta:', err);
+            return res.status(500).json({ error: 'Error al obtener el nombre de usuario' });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+        res.json({ username: results[0].username });
+    });
 });
