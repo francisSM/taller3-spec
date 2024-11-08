@@ -38,7 +38,7 @@ export default {
         ArrowLeft: { pressed: false }
       },
       gravity: 1,
-      groundLevel: 62,
+      groundLevel: 108,
       animationId: null,
       lastKey: null,
       backgroundMusic: new Audio(require('@/assets/Fight.wav')),

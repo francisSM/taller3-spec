@@ -1,6 +1,7 @@
 <template>
     <div>
         <h2>Login</h2>
+        <br>
         <form @submit.prevent="login">
             <input type="text" v-model="username" placeholder="Username" required />
             <input type="password" v-model="password" placeholder="Password" required />
@@ -40,7 +41,17 @@ export default {
 </script>
 
 <style scoped>
-/* Estilos básicos para el formulario de login */
+h2{
+    margin: 0;
+    display: flex;
+    justify-content: center;  
+    align-items: center;
+    color: white; 
+}
+div {
+    margin-top: 150px;
+}
+
 form {
     max-width: 300px;
     margin: 0 auto;
