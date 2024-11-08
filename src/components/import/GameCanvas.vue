@@ -98,8 +98,8 @@ export default {
       return {
         position: { x, y },
         velocity: { x: 0, y: 0 },
-        width: 75,
-        height: 180,
+        width: 50,
+        height: 150,
         image: image,
         health: 100,
         isAttacking: false,
