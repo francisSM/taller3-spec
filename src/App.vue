@@ -1,24 +1,33 @@
-<!-- src/App.vue -->
 <template>
   <div id="app">
-    <!-- Mostrar el menú principal si `showMenu` es verdadero -->
-    <MenuPrincipal v-if="showMenu" @start-game="goToCharacterSelection" />
+    <!-- Menú principal -->
+    <MenuPrincipal v-show="showMenu" @start-game="goToCharacterSelection" />
 
-    <!-- Mostrar la selección de personajes si `showCharacterSelection` es verdadero -->
+    <!-- Selección de personajes -->
     <div v-if="showCharacterSelection" class="character-selection">
-      <CharacterCarousel title="Seleccionar Personaje para Player 1" @character-selected="selectPlayer1Character"/>
-      <CharacterCarousel title="Seleccionar Personaje para Player 2" @character-selected="selectPlayer2Character"/>
-      <button @click="startGame" :disabled="!player1Character || !player2Character">Comenzar Juego</button>
+      <CharacterCarousel title="Player 1" @character-selected="selectPlayer1Character" />
+      <CharacterCarousel title="Player 2" @character-selected="selectPlayer2Character" />
+      <button @click="startGame" :disabled="!player1Character || !player2Character">
+        Comenzar Juego
+      </button>
     </div>
 
-    <!-- Mostrar el canvas del juego cuando los personajes están seleccionados -->
-    <GameCanvas v-if="!showMenu && !showCharacterSelection && !gameOver" 
-                :player1Character="player1Character" 
-                :player2Character="player2Character" 
-                @game-over="handleGameOver"/>
+    <!-- Canvas del juego -->
+    <GameCanvas
+      v-if="!showMenu && !showCharacterSelection && !gameOver"
+      :player1Character="player1Character"
+      :player2Character="player2Character"
+      @game-over="handleGameOver"
+    />
 
-    <!-- Mostrar el menú de fin de juego con el mensaje de victoria -->
-    <EndGameMenu v-if="gameOver" :show="gameOver" :winnerMessage="winnerMessage" @play-again="restartGame" @back-to-menu="backToMenu"/>
+    <!-- Menú de fin de juego -->
+    <EndGameMenu
+      v-if="gameOver"
+      :show="gameOver"
+      :winner="winner"
+      @play-again="restartGame"
+      @back-to-menu="backToMenu"
+    />
   </div>
 </template>
 
@@ -37,11 +46,12 @@ export default {
       gameOver: false,
       player1Character: null,
       player2Character: null,
-      winnerMessage: '' // Mensaje para mostrar el ganador
+      winner: '', // Cambiado a `winner` en lugar de `winnerMessage`
     };
   },
   methods: {
     goToCharacterSelection() {
+      this.resetCharacters();
       this.showMenu = false;
       this.showCharacterSelection = true;
     },
@@ -52,32 +62,76 @@ export default {
       this.player2Character = character;
     },
     startGame() {
-      this.showCharacterSelection = false;
-      this.gameOver = false;
+      if (this.player1Character && this.player2Character) {
+        this.showCharacterSelection = false;
+        this.gameOver = false;
+      }
     },
     handleGameOver(winner) {
-      this.gameOver = true;
-      this.winnerMessage = winner === 'player1' ? '¡Ganó el Player 1!' : '¡Ganó el Player 2!';
-    },
+    console.log("Ganador recibido:", winner); 
+    if (winner === 'Player 1') {
+    this.winner = '¡Ganó el Player 1!';
+    }  else if (winner === 'Player 2') {
+      this.winner = '¡Ganó el Player 2!';
+    } else {
+    this.winner = '¡Empate!';
+    }
+    this.gameOver = true;
+    }
+    ,
     restartGame() {
-      this.player1Character = null;
-      this.player2Character = null;
+      this.resetCharacters();
       this.showCharacterSelection = true;
       this.gameOver = false;
     },
     backToMenu() {
+      this.resetCharacters();
       this.showMenu = true;
       this.showCharacterSelection = false;
       this.gameOver = false;
-    }
-  }
+    },
+    resetCharacters() {
+      this.player1Character = null;
+      this.player2Character = null;
+    },
+  },
 };
 </script>
 
-<style>
+<style scoped>
 .character-selection {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 20px;
+}
+
+button {
+  background-color: #111;
+  color: #00ffcc;
+  padding: 12px 24px;
+  margin: 15px;
+  font-size: 16px;
+  font-weight: bold;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.6),
+    inset 0 0 10px rgba(0, 255, 204, 0.8);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+button:disabled {
+  background-color: #555;
+  color: #888;
+  border-color: #666;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.9),
+    inset 0 0 12px rgba(0, 255, 204, 0.9);
 }
 </style>

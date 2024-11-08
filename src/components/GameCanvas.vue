@@ -2,14 +2,14 @@
   <div id="container" v-if="!gameOver">
     <div id="healthContainer">
       <div class="playerContainer">
-        <div class="playerName">Player 1</div>
+        <div class="playerName">Player 1</div><br>
         <div class="healthBar">
           <div class="health" :style="{ width: playerHealth + '%' }"></div>
         </div>
       </div>
       <div id="separador">VS</div>
       <div class="playerContainer">
-        <div class="playerName">Player 2</div>
+        <div class="playerName">Player 2</div><br>
         <div class="healthBar">
           <div class="health" :style="{ width: enemyHealth + '%' }"></div>
         </div>
@@ -158,10 +158,12 @@ export default {
       }
 
       if (this.playerHealth <= 0 || this.enemyHealth <= 0) {
-        this.gameOver = true;
-        this.displayText = this.playerHealth <= 0 ? '¡Ganó el Player 2!' : '¡Ganó el Player 1!';
-        this.$emit('game-over');
+      this.gameOver = true;
+      this.displayText = this.playerHealth <= 0 ? '¡Ganó el Player 2!' : '¡Ganó el Player 1!';
+      const winner = this.playerHealth <= 0 ? 'Player 2' : 'Player 1';
+      this.$emit('game-over', winner); // Emitimos el evento con el nombre del ganador
       }
+
     },
     animate(ctx) {
       if (this.gameOver) return;
