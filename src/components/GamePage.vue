@@ -88,5 +88,18 @@ export default {
     align-items: center;
     margin-top: 20px;
 }
+button {
+  background-color: #111;
+  color: #00ffcc;
+  padding: 10px 20px;
+  margin: 10px;
+  font-size: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0px 0px 15px rgba(0, 255, 204, 0.6),
+              inset 0px 0px 10px rgba(0, 255, 204, 0.8);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
 
 </style>
